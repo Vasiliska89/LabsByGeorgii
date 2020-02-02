@@ -7,11 +7,32 @@
 #include <iostream>
 #include <string>
 #include <fstream>
-#include <io.h>
-#include <fcntl.h>
 #include <locale>
 #include <locale.h>
 #include "func.h"
+#include <windows.h>  
+#include "graphics.h"
+
+static int oldin = 0, oldout = 0;
+
+static void exitfunc()
+{
+    SetConsoleCP(oldin);
+    SetConsoleOutputCP(oldout);
+}
+
+void cons1251()
+{
+    if (oldin)
+        return;
+
+    atexit(exitfunc);
+
+    oldin = GetConsoleCP();
+    oldout = GetConsoleOutputCP();
+    SetConsoleCP(1251);
+    SetConsoleOutputCP(1251);
+}
 void head() {
     cout << "------------------------------------------------------------------------------------------\n";
     cout << "|   Имя   | Живой |                        Имущество                         | Богатство |\n";
@@ -172,6 +193,7 @@ rubber freshman(rubber rubbers[], rubber itogo, int crew) {
     cin >> rubbers[crew].wifes;
     cout << "Монеты:\n";
     cin >> rubbers[crew].coins;
+    rubbers[crew].wealth = set_wealth(rubbers[crew]);
     if (rubbers[crew].alive) {
         itogo.alive++;
         itogo.horses += rubbers[crew].horses;
@@ -185,13 +207,20 @@ rubber freshman(rubber rubbers[], rubber itogo, int crew) {
     return itogo;
 }
 void findname(rubber rubbers[], int crew) {
-    _setmode(_fileno(stdout), _O_U16TEXT);
-    cout << "Введите имя: ";
-    string text;
-    cin >> text;
-    cout << text << "\n";
-    head();
-    for (int i = 0; i < crew; i++) {
-        if (text == rubbers[i].name) write_rub(rubbers[i]);
+    char str[1000];
+    fflush(stdout);
+    cout << "Введите имя:\n";
+    cin >> str;
+    int i;
+    string s = "";
+    for (i = 0; i < strlen(str); i++) {
+        s = s + str[i];
     }
+    head();
+    for (i = 0; i < crew; i++) {
+        if (s == rubbers[i].name) write_rub(rubbers[i]);
+    }
+    
+    fflush(stdout);
+
 }

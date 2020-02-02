@@ -1,0 +1,8 @@
+﻿  ConsoleApplication1.cpp
+  func.cpp
+C:\Users\pc\source\repos\LabsByGeorgii\ConsoleApplication1\ConsoleApplication1\func.h(6,1): warning C4005: 'M': macro redefinition
+C:\Users\pc\source\repos\LabsByGeorgii\ConsoleApplication1\ConsoleApplication1\func.cpp(1): message : see previous definition of 'M'
+C:\Users\pc\source\repos\LabsByGeorgii\ConsoleApplication1\ConsoleApplication1\func.cpp(219,19): warning C4018: '<': signed/unsigned mismatch
+C:\Users\pc\source\repos\LabsByGeorgii\ConsoleApplication1\ConsoleApplication1\func.cpp(211,21): warning C4101: 'buf': unreferenced local variable
+  Generating Code...
+  ConsoleApplication1.vcxproj -> C:\Users\pc\source\repos\LabsByGeorgii\ConsoleApplication1\Debug\ConsoleApplication1.exe

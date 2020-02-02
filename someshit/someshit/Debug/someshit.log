@@ -1,0 +1,3 @@
+﻿  shit.cpp
+C:\Users\pc\source\repos\LabsByGeorgii\someshit\someshit\shit.cpp(34,21): warning C4101: 'buf': unreferenced local variable
+  someshit.vcxproj -> C:\Users\pc\source\repos\LabsByGeorgii\someshit\Debug\someshit.exe

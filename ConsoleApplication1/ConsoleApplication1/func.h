@@ -1,5 +1,6 @@
 // Начинаем с директив препроцессора. ADD_H – это произвольное уникальное имя (обычно используется имя заголовочного файла)
 #include <string>
+
 using namespace std;
 #ifndef FUNC_H
 #define FUNC_H
@@ -26,5 +27,6 @@ void the_most_rich(rubber rubbers[], int crew);
 rubber kill(rubber rubbers[], rubber itogo);
 rubber freshman(rubber rubbers[], rubber itogo, int crew);
 void findname(rubber rubbers[], int crew);
+void cons1251();
 // Заканчиваем директивой препроцессора
 #endif
