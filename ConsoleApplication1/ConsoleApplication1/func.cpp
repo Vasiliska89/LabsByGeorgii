@@ -7,32 +7,18 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <io.h>
+#include <algorithm>
+#include <fcntl.h>
 #include <locale>
 #include <locale.h>
 #include "func.h"
-#include <windows.h>  
-#include "graphics.h"
-
-static int oldin = 0, oldout = 0;
-
-static void exitfunc()
-{
-    SetConsoleCP(oldin);
-    SetConsoleOutputCP(oldout);
-}
-
-void cons1251()
-{
-    if (oldin)
-        return;
-
-    atexit(exitfunc);
-
-    oldin = GetConsoleCP();
-    oldout = GetConsoleOutputCP();
-    SetConsoleCP(1251);
-    SetConsoleOutputCP(1251);
-}
+#include <Windows.h>
+#include <fstream>
+#include <iterator>
+#include <stdlib.h>
+#include <math.h>
+#include < codecvt >
 void head() {
     cout << "------------------------------------------------------------------------------------------\n";
     cout << "|   Имя   | Живой |                        Имущество                         | Богатство |\n";
@@ -40,10 +26,16 @@ void head() {
     cout << "|         |       | Скакуны |  Сабли  | Рубины |  Ожерелья  |  Жены | Монеты |-----------|\n";
     cout << "------------------------------------------------------------------------------------------\n";
 }
+std::wstring StringToWString(const std::string& s)
+{
+    std::wstring temp(s.length(), L' ');
+    std::copy(s.begin(), s.end(), temp.begin());
+    return temp;
+}
 void write_rub(rubber r) {
     cout << "|";
-    cout.width(9);
-    cout << r.name;
+    wcout.width(9);
+    wcout << r.name;
     cout.width(1);
     cout << "|";
     cout.width(7);
@@ -89,37 +81,55 @@ rubber read(rubber rubbers[], string filename, rubber itogo) {
     srand(unsigned(std::time(0)));
     string name;
     int crew = 0;
-    ifstream in(filename);
-    if (in.is_open())
+    //ifstream in(filename);
+    //wifstream stream(filename);
+
+    // wstring str(istreambuf_iterator<wchar_t>(stream), istreambuf_iterator<wchar_t>());
+
+    //wstring str;
+    //str.assign(istreambuf_iterator<wchar_t>(stream), istreambuf_iterator<wchar_t>());
+
+    //wcout << str << endl;
+
+    while (crew < M)
     {
+        //std::wstring str2(name.length(), L' '); // Make room for characters
 
-        while (getline(in, name) && crew < M)
-        {
-            rubbers[crew].name = name;
-            rubbers[crew].alive = rand() % 2;
-            rubbers[crew].horses = rand() % 10;
-            rubbers[crew].coins = rand() % 5000;
-            rubbers[crew].necklaces = rand() % 10;
-            rubbers[crew].rubies = rand() % 50;
-            rubbers[crew].sabers = rand() % 5;
-            rubbers[crew].wifes = rand() % 10;
-            rubbers[crew].wealth = set_wealth(rubbers[crew]);
-            if (rubbers[crew].alive) {
-                itogo.alive++;
-                itogo.horses += rubbers[crew].horses;
-                itogo.coins += rubbers[crew].coins;
-                itogo.necklaces += rubbers[crew].necklaces;
-                itogo.rubies += rubbers[crew].rubies;
-                itogo.sabers += rubbers[crew].sabers;
-                itogo.wifes += rubbers[crew].wifes;
-                itogo.wealth = set_wealth(itogo);
-            }
-            crew++;
+ // Copy string to wstring.
+        //std::copy(name.begin(), name.end(), str2.begin());
+        //cout << name+"\n";
+        //rubbers[crew].name = StringToWString(name);
+        rubbers[crew].alive = 1;
+        rubbers[crew].horses = rand() % 10;
+        rubbers[crew].coins = rand() % 5000;
+        rubbers[crew].necklaces = rand() % 10;
+        rubbers[crew].rubies = rand() % 50;
+        rubbers[crew].sabers = rand() % 5;
+        rubbers[crew].wifes = rand() % 10;
+        rubbers[crew].wealth = set_wealth(rubbers[crew]);
+        if (rubbers[crew].alive) {
+            itogo.alive++;
+            itogo.horses += rubbers[crew].horses;
+            itogo.coins += rubbers[crew].coins;
+            itogo.necklaces += rubbers[crew].necklaces;
+            itogo.rubies += rubbers[crew].rubies;
+            itogo.sabers += rubbers[crew].sabers;
+            itogo.wifes += rubbers[crew].wifes;
+            itogo.wealth = set_wealth(itogo);
         }
+        crew++;
     }
-
-    in.close();
-    itogo.name = "Итого";
+    rubbers[0].name = L"Абдулла";
+    rubbers[1].name = L"Азамат";
+    rubbers[2].name = L"Гамзат";
+    rubbers[3].name = L"Джавдет";
+    rubbers[4].name = L"Джафар";
+    rubbers[5].name = L"Джохар";
+    rubbers[6].name = L"Динар";
+    rubbers[7].name = L"Ибрагим";
+    rubbers[8].name = L"Иса";
+    rubbers[9].name = L"Ислам";
+    itogo.name = L"Итого";
     return itogo;
 }
 void menu() {
@@ -154,18 +164,29 @@ void the_most_rich(rubber rubbers[], int crew) {
     int i = 0;
     int max = 0;
     for (i = 0; i < crew; i++) {
-        if (rubbers[i].wealth > max) max = rubbers[i].wealth;
+        if (rubbers[i].wealth > max&& rubbers[i].alive) max = rubbers[i].wealth;
     }
     head();
     for (i = 0; i < crew; i++) {
-        if (rubbers[i].wealth == max) write_rub(rubbers[i]);
+        if (rubbers[i].wealth == max && rubbers[i].alive) write_rub(rubbers[i]);
     }
 }
-rubber kill(rubber rubbers[], rubber itogo) {
-    cout << "Введите номер убитого:\n";
-    int i;
-    cin >> i;
-    rubbers[i - 1].alive = 0;
+rubber kill(rubber rubbers[], rubber itogo, int crew) {
+    wcout.imbue(locale(".1251"));
+    wcin.imbue(locale(".866"));
+    cout << "Введите имя убитого:\n";
+    wstring name;
+    wcin >> name;
+    int i = -1;
+    int t = 0;
+    while (i < crew && t == 0) {
+        i++;
+        if (rubbers[i].name == name && rubbers[i].alive) {
+            rubbers[i].alive = 0;
+            t = 1;
+        }
+    }
+    rubbers[i].alive = 0;
     itogo.alive--;
     itogo.horses -= rubbers[i].horses;
     itogo.coins -= rubbers[i].coins;
@@ -177,8 +198,13 @@ rubber kill(rubber rubbers[], rubber itogo) {
     return itogo;
 }
 rubber freshman(rubber rubbers[], rubber itogo, int crew) {
+    //int a = _setmode(_fileno(stdout), _O_U16TEXT);
+    wcout.imbue(locale(".1251"));
+    wcin.imbue(locale(".866"));
     cout << "Введите имя:\n";
-    cin >> rubbers[crew].name;
+    wstring name;
+    wcin >> name;
+    rubbers[crew].name = name;
     cout << "Жив:\n";
     cin >> rubbers[crew].alive;
     cout << "Скакуны:\n";
@@ -193,7 +219,8 @@ rubber freshman(rubber rubbers[], rubber itogo, int crew) {
     cin >> rubbers[crew].wifes;
     cout << "Монеты:\n";
     cin >> rubbers[crew].coins;
-    rubbers[crew].wealth = set_wealth(rubbers[crew]);
+    rubbers[crew].wealth =
+        set_wealth(rubbers[crew]);
     if (rubbers[crew].alive) {
         itogo.alive++;
         itogo.horses += rubbers[crew].horses;
@@ -207,20 +234,68 @@ rubber freshman(rubber rubbers[], rubber itogo, int crew) {
     return itogo;
 }
 void findname(rubber rubbers[], int crew) {
-    char str[1000];
-    fflush(stdout);
-    cout << "Введите имя:\n";
-    cin >> str;
-    int i;
-    string s = "";
-    for (i = 0; i < strlen(str); i++) {
-        s = s + str[i];
-    }
-    head();
-    for (i = 0; i < crew; i++) {
-        if (s == rubbers[i].name) write_rub(rubbers[i]);
-    }
-    
-    fflush(stdout);
+    //_setmode(_fileno(stdout), _O_U16TEXT);
 
+    //cout << "Введите имя: ";
+    wcout.imbue(locale(".1251"));
+    wcin.imbue(locale(".866"));
+    wstring name; //или wstring name;
+    cout << "Введи имя:" << endl;
+    wcin >> name;
+    cout << "Вы ищете: ";
+    wcout << name;
+    //string text;
+    //string text(name.begin(), name.end());
+    //cout << text <<"\n";
+    //cout << "\n" << text << "\n";
+    wcout << name << "\n";
+    head();
+    for (int i = 0; i < crew; i++) {
+
+
+        if (name == rubbers[i].name) write_rub(rubbers[i]);
+    }
+}
+void graph(rubber rubbers[], int crew) {
+    for (int i = 0; i < 99; i++) {
+        printf("\n");
+    }
+    int len = 1800;
+    int div = 15;
+    int width = 650;
+    cout << "\n";
+
+    for (int i = 0; i < crew; i++) {
+        wcout.width((len / crew) / div);
+        if (rubbers[i].alive) wcout << rubbers[i].name;
+    }
+    cout << "\n";
+    float x;
+    HDC hDC = GetDC(GetConsoleWindow());
+
+    HPEN Pen = CreatePen(PS_SOLID, 2, RGB(255, 255, 255));
+    SelectObject(hDC, Pen);
+    MoveToEx(hDC, 6, 0, NULL);
+    LineTo(hDC, 6, len);
+    MoveToEx(hDC, 0, width, NULL);
+    LineTo(hDC, len, width);
+    int l = crew;
+    for (int i = 0; i < crew; i++) {
+        if (rubbers[i].alive) {
+            MoveToEx(hDC, 6 + i * (len / crew), width - rubbers[i].wealth / div, NULL);
+            LineTo(hDC, 6 + i * (len / crew), width);
+            MoveToEx(hDC, 6 + i * (len / crew), width - rubbers[i].wealth / div, NULL);
+            LineTo(hDC, 6 + (i + 1) * (len / crew), width - rubbers[i].wealth / div);
+            MoveToEx(hDC, 6 + (i + 1) * (len / crew), width - rubbers[i].wealth / div, NULL);
+            LineTo(hDC, 6 + (i + 1) * (len / crew), width);
+        }
+
+
+    }
+    /*for (x = -8.0f; x <= 8.0f; x += 0.01f) // O(100,85) - center
+    {
+        MoveToEx(hDC, 10 * x + 100, -10 * sin(x) + 85, NULL);//10 - scale
+        LineTo(hDC, 10 * x + 100, -10 * sin(x) + 85);
+    }*/
+    system("pause");
 }
