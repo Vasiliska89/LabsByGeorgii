@@ -15,8 +15,7 @@ rubber itogo;
 
 int main()
 {
-    cons1251();
-    //setlocale(0, "");
+    setlocale(0, "");
     itogo = read(rubbers, "names.txt", itogo);
     menu();
     int i;
@@ -33,7 +32,7 @@ int main()
             the_most_rich(rubbers, crew);
             break;
         case(4):
-            itogo = kill(rubbers, itogo);
+            itogo = kill(rubbers, itogo, crew);
             break;
         case(5):
             itogo = freshman(rubbers, itogo, crew);
@@ -41,6 +40,9 @@ int main()
             break;
         case(6):
             findname(rubbers, crew);
+            break;
+        case(7):
+            graph(rubbers, crew);
             break;
 
         }
